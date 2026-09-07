@@ -56,17 +56,17 @@ The project demonstrates how multiple backend technologies work together in a re
 
 # Tech Stack
 
-Django : Core backend and business logic 
-Django REST Framework : REST API development 
-PostgreSQL : Permanent relational data storage 
-JWT : User authentication 
-Django Channels : WebSocket management 
-WebSockets : Real-time communication 
-Redis : Channel layer, presence, and Celery broker 
-Celery : Background task processing 
-Kafka : Event streaming 
-MongoDB : Audit events and activity logs 
-Docker : Containerized infrastructure 
+- Django : Core backend and business logic 
+- Django REST Framework : REST API development 
+- PostgreSQL : Permanent relational data storage 
+- JWT : User authentication 
+- Django Channels : WebSocket management 
+- WebSockets : Real-time communication 
+- Redis : Channel layer, presence, and Celery broker 
+- Celery : Background task processing 
+- Kafka : Event streaming 
+- MongoDB : Audit events and activity logs 
+- Docker : Containerized infrastructure 
 
 ---
 
