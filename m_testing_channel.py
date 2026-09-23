@@ -1,7 +1,5 @@
 import asyncio
-
 from channels_redis.core import RedisChannelLayer
-
 
 async def test():
     layer = RedisChannelLayer(
@@ -19,9 +17,7 @@ async def test():
     )
 
     print("Message sent successfully")
-
     message = await layer.receive("test_channel")
-
     print("Message received:")
     print(message)
 

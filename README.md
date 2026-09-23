@@ -4,8 +4,6 @@ A learning-focused, distributed real-time chat backend built using Django and mo
 
 The project demonstrates how multiple backend technologies work together in a real-world message flow, including REST APIs, WebSockets, Redis, Celery, Kafka, MongoDB, PostgreSQL, JWT authentication, and Docker.
 
-> **Primary Goal:** Understand why each technology exists and how they interact, rather than simply integrating multiple technologies.
-
 ---
 
 # Architecture
