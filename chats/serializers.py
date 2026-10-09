@@ -10,7 +10,6 @@ from .models import (
 
 User = get_user_model()
 
-
 class ConversationUserSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -20,7 +19,6 @@ class ConversationUserSerializer(serializers.ModelSerializer):
             'username',
             'email',
         ]
-
 
 class ConversationSerializer(serializers.ModelSerializer):
     members = serializers.SerializerMethodField()
@@ -41,12 +39,10 @@ class ConversationSerializer(serializers.ModelSerializer):
 
     def get_members(self, obj):
         memberships = obj.members.select_related('user').all()
-
         users = [
             membership.user
             for membership in memberships
         ]
-
         return ConversationUserSerializer(
             users,
             many=True
@@ -55,19 +51,16 @@ class ConversationSerializer(serializers.ModelSerializer):
 
 class AddConversationMemberSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
-
     def validate_user_id(self, value):
         if not User.objects.filter(id=value).exists():
             raise serializers.ValidationError(
                 "User does not exist."
             )
-
         return value
 
 
 class MessageSerializer(serializers.ModelSerializer):
     sender = ConversationUserSerializer(read_only=True)
-
     class Meta:
         model = Message
         fields = [

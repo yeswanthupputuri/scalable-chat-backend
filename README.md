@@ -1,380 +1,124 @@
-# Scalable Real-Time Chat Backend
+# Real-Time Chat Application System
 
-A learning-focused, distributed real-time chat backend built using Django and modern backend infrastructure.
+## 1. Abstract
 
-The project demonstrates how multiple backend technologies work together in a real-world message flow, including REST APIs, WebSockets, Redis, Celery, Kafka, MongoDB, PostgreSQL, JWT authentication, and Docker.
+The **Real-Time Chat Application System** is a backend application designed to enable real-time communication between authenticated users. It combines REST APIs and WebSockets to support user authentication, conversation management, message exchange, online presence tracking, and message delivery and read-status updates.
 
----
+The application is developed using Django REST Framework and Django Channels, with PostgreSQL for persistent application data and Redis for tracking active WebSocket connections. Apache Kafka enables event-driven processing, while Celery handles asynchronous background tasks. MongoDB stores audit events for monitoring and traceability.
 
-# Architecture
+The system follows a modular architecture in which each component has a specific responsibility. Messages and related application records are persisted in PostgreSQL, real-time communication is handled through WebSockets, and Kafka consumers process notification-related and audit events independently.
 
-```text
-                           CLIENT
-                             │
-                 ┌───────────┴───────────┐
-                 │                       │
-                REST                 WebSocket
-                 │                       │
-                 ▼                       ▼
-          Django + DRF             Django Channels
-                 │                       │
-                 │                 Redis Channel Layer
-                 │                       │
-                 └───────────┬───────────┘
-                             │
-                             ▼
-                        PostgreSQL
-                             │
-                             │ MESSAGE_SENT
-                             ▼
-                            Kafka
-                             │
-                 ┌───────────┴────────────┐
-                 │                        │
-                 ▼                        ▼
-        Notification Consumer         Audit Consumer
-                 │                        │
-                 ▼                        ▼
-          Redis Presence Check         MongoDB
-                 │
-                 ▼
-             Celery Task
-                 │
-                 ▼
-                Redis
-                 │
-                 ▼
-            Celery Worker
-                 │
-                 ▼
-            Notification
-```
+The application is containerized using Docker Compose, providing a development environment for running and testing the backend and its supporting services.
 
----
+## 2. Architecture Diagram
 
-# Tech Stack
+The following diagram illustrates the interaction between the client, backend services, databases, and event-processing components.
 
-- Django : Core backend and business logic 
-- Django REST Framework : REST API development 
-- PostgreSQL : Permanent relational data storage 
-- JWT : User authentication 
-- Django Channels : WebSocket management 
-- WebSockets : Real-time communication 
-- Redis : Channel layer, presence, and Celery broker 
-- Celery : Background task processing 
-- Kafka : Event streaming 
-- MongoDB : Audit events and activity logs 
-- Docker : Containerized infrastructure 
+**Architecture Diagram:**
 
----
-
-# Core Features
-
-The application currently implements:
-
-- User registration
-- User login
-- JWT authentication
-- Conversation creation
-- Conversation members
-- Conversation listing
-- Message history
-- WebSocket connections
-- Real-time messaging
-- Message persistence
-- Typing indicators
-- Online/offline presence
-- Message delivery status
-- Read receipts
-- Redis integration
-- Celery background tasks
-- Kafka event publishing
-- Kafka notification consumer
-- Kafka audit consumer
-- MongoDB event storage
-- Docker infrastructure configuration
-
----
-
-# Database Models
-
-## User
-
-```text
-User
-├── id
-├── username
-├── email
-├── password
-└── created_at
-```
-
----
-
-## Conversation
-
-```text
-Conversation
-├── id
-└── created_at
-```
-
----
-
-## ConversationMember
-
-```text
-ConversationMember
-├── id
-├── conversation_id
-└── user_id
-```
-
----
-
-## Message
-
-```text
-Message
-├── id
-├── conversation_id
-├── sender_id
-├── content
-└── created_at
-```
-
----
-
-## MessageStatus
-
-```text
-MessageStatus
-├── id
-├── message_id
-├── delivered_at
-└── read_at
-```
-
----
+![Real-Time Chat Application Architecture](data/architecture.png)
 
 
-# Project Structure
+## 3. Technology Stack and Component Responsibilities
 
-```text
-scalable-chat-backend/
+| Technology / Component | Responsibility                                                                    |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| Python 3.12            | Core programming language for backend development                                 |
+| Django 5.2             | Backend framework for application logic and database integration                  |
+| Django REST Framework  | Provides REST APIs for authentication, conversations, messages, and notifications |
+| Simple JWT             | Authenticates users through access and refresh tokens                             |
+| Django Channels        | Handles WebSocket connections and real-time messaging                             |
+| Daphne                 | ASGI server for serving HTTP and WebSocket traffic                                |
+| PostgreSQL             | Stores users, conversations, messages, message statuses, and notifications        |
+| Redis                  | Tracks active WebSocket connections and acts as the Celery message broker         |
+| Apache Kafka           | Distributes message and status events to independent consumers                    |
+| Celery                 | Executes asynchronous notification-processing tasks                               |
+| MongoDB                | Stores audit events consumed from Kafka                                           |
 
-│
-├── config/
-│   ├── settings.py
-│   ├── urls.py
-│   ├── asgi.py
-│   ├── wsgi.py
-│   └── celery.py
-│
-├── users/
-│   ├── models.py
-│   ├── serializers.py
-│   ├── views.py
-│   └── urls.py
-│
-├── chats/
-│   ├── models.py
-│   ├── consumers.py
-│   ├── routing.py
-│   ├── redis_client.py
-│   ├── kafka_producer.py
-│   ├── kafka_consumer.py
-│   ├── audit_consumer.py
-│   ├── mongodb_client.py
-│   └── tasks.py
-│
-├── manage.py
-│
-├── requirements.txt
-│
-├── .env
-│
-├── Dockerfile
-│
-└── docker-compose.yml
-```
 
----
+## 4. Essential APIs
 
-# Installation
+All protected endpoints require a valid JWT access token in the `Authorization` header.
 
-## Clone Repository
+| Method | API Endpoint                                               | Purpose                                                     |
+| ------ | ---------------------------------------------------------- | ----------------------------------------------------------- |
+| POST   | `/api/token/`                                              | Authenticates a user and returns JWT tokens                 |
+| POST   | `/api/token/refresh/`                                      | Obtains a refreshed access token                            |
+| GET    | `/api/conversations/`                                      | Retrieves conversations available to the authenticated user |
+| POST   | `/api/conversations/`                                      | Creates a new conversation                                  |
+| POST   | `/api/conversations/<conversation_id>/members/`            | Adds a user to an existing conversation                     |
+| GET    | `/api/conversations/<conversation_id>/messages/`           | Retrieves message history                                   |
+| POST   | `/api/conversations/<conversation_id>/messages/send/`      | Sends a message through the REST API                        |
+| GET    | `/api/conversations/notifications/`                        | Retrieves the authenticated user's notifications            |
+| GET    | `/api/conversations/notifications/unread-count/`           | Retrieves the unread notification count                     |
+| POST   | `/api/conversations/notifications/<notification_id>/read/` | Marks a notification as read                                |
 
-```bash
-git clone <repository-url>
+### WebSocket Endpoint
 
+| Endpoint                                         | Purpose                                                                                |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| `ws://127.0.0.1:8000/ws/chat/<conversation_id>/` | Establishes a WebSocket connection for real-time messaging and status acknowledgements |
+
+WebSocket clients send message events and can acknowledge message delivery and reading without relying on repeated REST requests. Authentication must follow the mechanism configured in the application's WebSocket middleware.
+
+## 5. Data Storage and Responsibilities
+
+| Storage Component | Stored Data / Responsibility                                                                                                        |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| PostgreSQL        | Persistent relational data, including users, conversations, conversation memberships, messages, message statuses, and notifications |
+| Redis             | Active WebSocket connection identifiers used to determine whether a user is online; also serves as the Celery broker                |
+| Apache Kafka      | Message and status events published for asynchronous processing by independent consumers                                            |
+| MongoDB           | Audit events processed by the audit consumer                                                                                        |
+| Celery Worker     | Executes background notification-processing tasks using tasks delivered through Redis                                               |
+
+### Data Flow Summary
+
+* **PostgreSQL** is the primary source of persistent application data.
+* **Redis** maintains transient online-presence information and supports background-task queuing.
+* **Kafka** distributes application events without requiring the message-processing and audit consumers to perform their work in the original request.
+* **MongoDB** stores audit records for later inspection.
+* **Celery** processes scheduled background tasks; the current notification task logs processing activity rather than sending external notifications.
+
+## 6. Database Models
+
+| Model                | Purpose                                                     |
+| -------------------- | ----------------------------------------------------------- |
+| `Conversation`       | Represents a conversation                                   |
+| `ConversationMember` | Associates users with conversations                         |
+| `Message`            | Stores message content, sender, conversation, and timestamp |
+| `MessageStatus`      | Tracks delivery and read status for each recipient          |
+| `Notification`       | Stores persistent user notification records                 |
+
+### Model Relationships
+
+* A conversation can have multiple members.
+* A conversation can contain multiple messages.
+* Each message belongs to a conversation and has a sender.
+* Each recipient has a separate `MessageStatus` record for a message.
+* Notifications associate users with messages and track notification read state.
+
+## 7. Installation
+
+### Clone the Repository
+
+```powershell
+git clone https://github.com/yeswanthupputuri/scalable-chat-backend.git
 cd scalable-chat-backend
 ```
 
----
 
-## Create Virtual Environment
+## 8. Future Improvements
 
-Windows:
-
-```powershell
-python -m venv venv
-```
-
-Activate:
-
-```powershell
-venv\Scripts\activate
-```
+* **Message History Optimization:** Introduce pagination, filtering, and search for conversations and messages.
+* **Improved Presence Management:** Handle unexpected disconnects, reconnection, and stale Redis connection entries.
+* **Reliable Event Processing:** Add retries, idempotent event handling, and dead-letter processing for Kafka consumers.
+* **Enhanced Security:** Introduce rate limiting, stronger validation, and production-ready secret management.
+* **Scalability Testing:** Evaluate concurrent WebSocket connections, message throughput, and background-task performance.
+* **Monitoring and Observability:** Add structured logs, metrics, and health checks across services.
+* **Additional Messaging Features:** Implement group-chat enhancements, message editing, deletion, and file attachments.
 
 ---
 
-## Install Dependencies
+## Conclusion
 
-```powershell
-pip install -r requirements.txt
-```
-
-# Database Migrations
-
-Create migrations:
-
-```powershell
-python manage.py makemigrations
-```
-
-Run migrations:
-
-```powershell
-python manage.py migrate
-```
----
-
-# Run Django
-
-```powershell
-python manage.py runserver
-```
-
-Application:
-
-```text
-http://localhost:8000
-```
-
----
-
-# Run Celery Worker
-
-```powershell
-celery -A config worker --loglevel=info
-```
-
-
-# Run Notification Kafka Consumer
-
-```powershell
-python chats/kafka_consumer.py
-```
-
-
-# Run Audit Kafka Consumer
-
-```powershell
-python chats/audit_consumer.py
-```
-
----
-
-# WebSocket Connection
-
-Example:
-
-```text
-ws://127.0.0.1:8000/ws/chat/1/?user_id=1
-```
----
-
-# Docker
-
-The project is being containerized using Docker Compose.
-
-The target infrastructure includes:
-
-```text
-Docker Compose
-│
-├── Django
-├── PostgreSQL
-├── Redis
-├── Kafka
-├── MongoDB
-├── Celery Worker
-├── Notification Consumer
-└── Audit Consumer
-```
-
-Start the complete environment:
-
-```powershell
-docker compose up --build
-```
-
-Check running containers:
-
-```powershell
-docker compose ps
-```
-
-Stop containers:
-
-```powershell
-docker compose down
-```
----
-
-# Data Storage Responsibilities
-
-```text
-PostgreSQL
-    │
-    └── Permanent chat data
-
-Redis
-    │
-    ├── Channel layer
-    ├── Presence
-    └── Celery broker
-
-Kafka
-    │
-    └── Event stream
-
-MongoDB
-    │
-    └── Audit events
-
-Celery
-    │
-    └── Background task processing
-```
----
-
-# Future Improvements
-
-Potential improvements include:
-
-- Multiple device presence handling
-- Rate limiting
-- Retry mechanisms for Kafka and Celery
-- Dead Letter Queues
-- Kafka schema validation
-- Idempotent event processing
-- Database indexes
-- Structured logging
-- Production deployment
-- Nginx reverse proxy
-- Horizontal scaling
-
----
-
+The Scalable Real-Time Chat Backend demonstrates the integration of REST APIs, WebSockets, relational data storage, online-presence tracking, event-driven processing, and asynchronous task execution within a containerized backend application. It provides a foundation for exploring scalable messaging architectures and extending the system with more advanced communication features.

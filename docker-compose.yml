@@ -26,7 +26,6 @@ services:
   #
   # localhost:9092
   #     Used by applications running on Windows
-  #
   # kafka:29092
   #     Used by Docker containers
   # ============================================================

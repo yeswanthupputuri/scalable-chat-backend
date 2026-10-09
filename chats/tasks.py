@@ -1,7 +1,5 @@
 from celery import shared_task
-
 from .models import Notification
-
 
 @shared_task
 def send_notification(user_id, message_id):
@@ -19,11 +17,7 @@ def send_notification(user_id, message_id):
     ).first()
 
     if notification is None:
-
-        print(
-            "Notification does not exist."
-        )
-
+        print("Notification does not exist.")
         return
 
     print(

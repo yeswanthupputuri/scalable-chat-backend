@@ -22,12 +22,10 @@ KAFKA_BOOTSTRAP_SERVERS = os.getenv(
     "localhost:9092"
 )
 
-
 producer = KafkaProducer(
     bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
     value_serializer=lambda value: json.dumps(value).encode("utf-8"),
 )
-
 
 @transaction.atomic
 def create_chat_message(
@@ -91,10 +89,8 @@ def create_chat_message(
     }
 
     producer.send(
-        "chat-events",
-        value=event
+        "chat-events", value=event
     )
-
     producer.flush()
 
     return message

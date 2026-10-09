@@ -8,26 +8,18 @@ from .views import RegisterView, ProfileView
 
 urlpatterns = [
     path(
-        'register/',
-        RegisterView.as_view(),
-        name='register'
+        'register/', RegisterView.as_view(), name='register'
     ),
 
     path(
-        'login/',
-        TokenObtainPairView.as_view(),
-        name='login'
+        'login/', TokenObtainPairView.as_view(), name='login'
     ),
 
     path(
-        'refresh/',
-        TokenRefreshView.as_view(),
-        name='token_refresh'
+        'refresh/', TokenRefreshView.as_view(), name='token_refresh'
     ),
     
     path(
-        'profile/',
-        ProfileView.as_view(),
-        name='profile'
+        'profile/', ProfileView.as_view(), name='profile'
     ),
 ]

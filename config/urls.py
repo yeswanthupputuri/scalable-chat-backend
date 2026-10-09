@@ -2,33 +2,25 @@ from django.contrib import admin
 from django.urls import include, path
 
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
+    TokenObtainPairView, TokenRefreshView,
 )
-
 
 urlpatterns = [
     path("admin/", admin.site.urls),
 
     path(
-        "api/auth/",
-        include("users.urls")
+        "api/auth/", include("users.urls")
     ),
 
     path(
-        "api/conversations/",
-        include("chats.urls")
+        "api/conversations/", include("chats.urls")
     ),
 
     path(
-        "api/token/",
-        TokenObtainPairView.as_view(),
-        name="token-obtain-pair"
+        "api/token/",TokenObtainPairView.as_view(),name="token-obtain-pair"
     ),
 
     path(
-        "api/token/refresh/",
-        TokenRefreshView.as_view(),
-        name="token-refresh"
+        "api/token/refresh/",TokenRefreshView.as_view(),name="token-refresh"
     ),
 ]

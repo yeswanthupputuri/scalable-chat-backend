@@ -3,18 +3,14 @@ from django.db import models
 
 
 class Conversation(models.Model):
-
     created_at = models.DateTimeField(
         auto_now_add=True
     )
-
     def __str__(self):
-
         return f"Conversation {self.id}"
 
 
 class ConversationMember(models.Model):
-
     conversation = models.ForeignKey(
         Conversation,
         on_delete=models.CASCADE,
@@ -26,13 +22,11 @@ class ConversationMember(models.Model):
         on_delete=models.CASCADE,
         related_name='conversations'
     )
-
     joined_at = models.DateTimeField(
         auto_now_add=True
     )
 
     class Meta:
-
         constraints = [
             models.UniqueConstraint(
                 fields=[
@@ -66,13 +60,11 @@ class Message(models.Model):
     )
 
     content = models.TextField()
-
     created_at = models.DateTimeField(
         auto_now_add=True
     )
 
     def __str__(self):
-
         return (
             f"Message {self.id} "
             f"by {self.sender.username}"
@@ -80,7 +72,6 @@ class Message(models.Model):
 
 
 class MessageStatus(models.Model):
-
     message = models.ForeignKey(
         Message,
         on_delete=models.CASCADE,
