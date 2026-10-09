@@ -39,8 +39,8 @@ Thumbs.db
 
 chat_db_backup.sql
 m_testing_channel.py
-users/migrations/
-users/__pycache__/
-chats/migrations/
-chats/__pycache__/
+users/migrations
+users/__pycache__
+chats/migrations
+chats/__pycache__
 
