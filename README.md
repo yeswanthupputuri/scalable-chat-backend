@@ -1,16 +1,12 @@
 # Real-Time Chat Application System
 
-## 1. Abstract
-
 The **Real-Time Chat Application System** is a backend application designed to enable real-time communication between authenticated users. It combines REST APIs and WebSockets to support user authentication, conversation management, message exchange, online presence tracking, and message delivery and read-status updates.
 
 The application is developed using Django REST Framework and Django Channels, with PostgreSQL for persistent application data and Redis for tracking active WebSocket connections. Apache Kafka enables event-driven processing, while Celery handles asynchronous background tasks. MongoDB stores audit events for monitoring and traceability.
-
+ 
 The system follows a modular architecture in which each component has a specific responsibility. Messages and related application records are persisted in PostgreSQL, real-time communication is handled through WebSockets, and Kafka consumers process notification-related and audit events independently.
 
-The application is containerized using Docker Compose, providing a development environment for running and testing the backend and its supporting services.
-
-## 2. Architecture Diagram
+## Architecture Diagram
 
 The following diagram illustrates the interaction between the client, backend services, databases, and event-processing components.
 
@@ -19,7 +15,7 @@ The following diagram illustrates the interaction between the client, backend se
 ![Real-Time Chat Application Architecture](data/architecture.png)
 
 
-## 3. Technology Stack and Component Responsibilities
+## Technology Stack and Component Responsibilities
 
 | Technology / Component | Responsibility                                                                    |
 | ---------------------- | --------------------------------------------------------------------------------- |
@@ -36,7 +32,7 @@ The following diagram illustrates the interaction between the client, backend se
 | MongoDB                | Stores audit events consumed from Kafka                                           |
 
 
-## 4. Essential APIs
+## Essential APIs
 
 All protected endpoints require a valid JWT access token in the `Authorization` header.
 
@@ -61,7 +57,7 @@ All protected endpoints require a valid JWT access token in the `Authorization` 
 
 WebSocket clients send message events and can acknowledge message delivery and reading without relying on repeated REST requests. Authentication must follow the mechanism configured in the application's WebSocket middleware.
 
-## 5. Data Storage and Responsibilities
+## Data Storage and Responsibilities
 
 | Storage Component | Stored Data / Responsibility                                                                                                        |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
@@ -79,7 +75,7 @@ WebSocket clients send message events and can acknowledge message delivery and r
 * **MongoDB** stores audit records for later inspection.
 * **Celery** processes scheduled background tasks; the current notification task logs processing activity rather than sending external notifications.
 
-## 6. Database Models
+## Database Models
 
 | Model                | Purpose                                                     |
 | -------------------- | ----------------------------------------------------------- |
@@ -97,7 +93,7 @@ WebSocket clients send message events and can acknowledge message delivery and r
 * Each recipient has a separate `MessageStatus` record for a message.
 * Notifications associate users with messages and track notification read state.
 
-## 7. Installation
+## Installation
 
 ### Clone the Repository
 
@@ -107,7 +103,7 @@ cd scalable-chat-backend
 ```
 
 
-## 8. Future Improvements
+## Future Improvements
 
 * **Message History Optimization:** Introduce pagination, filtering, and search for conversations and messages.
 * **Improved Presence Management:** Handle unexpected disconnects, reconnection, and stale Redis connection entries.
