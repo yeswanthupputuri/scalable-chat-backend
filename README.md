@@ -1,6 +1,6 @@
 # Real-Time Chat Application System
 
-The **Real-Time Chat Application System** is a backend application designed to enable real-time communication between authenticated users. It combines REST APIs and WebSockets to support user authentication, conversation management, message exchange, online presence tracking, and message delivery and read-status updates.
+The **Real-Time Chat Application System** is designed to enable real-time communication between authenticated users. It combines REST APIs and WebSockets to support user authentication, conversation management, message exchange, online presence tracking, and message delivery and read-status updates.
 
 The application is developed using Django REST Framework and Django Channels, with PostgreSQL for persistent application data and Redis for tracking active WebSocket connections. Apache Kafka enables event-driven processing, while Celery handles asynchronous background tasks. MongoDB stores audit events for monitoring and traceability.
  
